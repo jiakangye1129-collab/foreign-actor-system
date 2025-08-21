@@ -1,72 +1,72 @@
-!DOCTYPE html
-html lang=zh
-head
-  meta charset=UTF-8
-  title外籍演员信息查询title
-  link rel=stylesheet href=httpscdn.datatables.net1.13.6cssjquery.dataTables.min.css
-  style
-    body { font-family 微软雅黑, sans-serif; margin 20px; }
-    h2 { text-align center; margin-bottom 20px; }
-    table { width 100%; }
-  style
-  script src=httpscode.jquery.comjquery-3.7.1.min.jsscript
-  script src=httpscdn.datatables.net1.13.6jsjquery.dataTables.min.jsscript
-head
-body
-  h2外籍演员信息查询系统h2
-  table id=actors class=display
-    thead
-      tr
-        th名th
-        th姓th
-        th联系方式th
-        th横影卡号码th
-        th护照号码th
-        th在华地th
-        th剧组名称th
-        th拍摄地点th
-        th拍摄开始日期th
-        th拍摄结束日期th
-        th联系人方式th
-        th备注th
-      tr
-    thead
-    tbodytbody
-  table
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>外籍演员信息查询</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        body { font-family: "微软雅黑", sans-serif; margin: 20px; }
+        h2 { text-align: center; margin-bottom: 20px; }
+        table { width: 100%; }
+    </style>
+</head>
+<body>
+    <h2>外籍演员信息查询系统</h2>
+    <table id="actors" class="display">
+        <thead>
+            <tr>
+                <th>名</th>
+                <th>姓</th>
+                <th>联系方式</th>
+                <th>横影卡号码</th>
+                <th>护照号码</th>
+                <th>在华地</th>
+                <th>剧组名称</th>
+                <th>拍摄地点</th>
+                <th>拍摄开始日期</th>
+                <th>拍摄结束日期</th>
+                <th>联系人方式</th>
+                <th>备注</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-  script
-    $(document).ready(function() {
-      $.getJSON(data.json, function(data) {
-        $('#actors').DataTable({
-          data data,
-          columns [
-            { data '名' },
-            { data '姓' },
-            { data '联系方式' },
-            { data '横影卡号码' },
-            { data '护照号码' },
-            { data '在华地' },
-            { data '剧组名称' },
-            { data '拍摄地点' },
-            { data '拍摄开始日期' },
-            { data '拍摄结束日期' },
-            { data '联系人方式' },
-            { data '备注' }
-          ],
-          language {
-            search 搜索：,
-            lengthMenu 每页显示 _MENU_ 条,
-            info 第 _START_ 到 _END_ 条，共 _TOTAL_ 条,
-            paginate {
-              first 首页,
-              last 末页,
-              next 下一页,
-              previous 上一页
-            }
-          }
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $.getJSON('data.json', function(data) {
+                $('#actors').DataTable({
+                    data: data,
+                    columns: [
+                        { data: '名' },
+                        { data: '姓' },
+                        { data: '联系方式' },
+                        { data: '横影卡号码' },
+                        { data: '护照号码' },
+                        { data: '在华地' },
+                        { data: '剧组名称' },
+                        { data: '拍摄地点' },
+                        { data: '拍摄开始日期' },
+                        { data: '拍摄结束日期' },
+                        { data: '联系人方式' },
+                        { data: '备注' }
+                    ],
+                    language: {
+                        search: "搜索：",
+                        lengthMenu: "每页显示 _MENU_ 条",
+                        info: "第 _START_ 到 _END_ 条，共 _TOTAL_ 条",
+                        paginate: {
+                            first: "首页",
+                            last: "末页",
+                            next: "下一页",
+                            previous: "上一页"
+                        }
+                    }
+                });
+            });
         });
-      });
-    });
-  script
-body
-html
+    </script>
+</body>
+</html>
