@@ -15,6 +15,57 @@
             color: #333;
             min-height: 100vh;
         }
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+        }
+        .login-box h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            background: #2980b9;
+        }
+        .login-error {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -23,18 +74,7 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             padding: 30px;
             position: relative;
-            overflow: hidden;
-        }
-        .container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(45deg, #3498db, #2ecc71);
-            border-radius: 0 0 0 100px;
-            z-index: 0;
+            overflow: visible;
         }
         h2 {
             text-align: center;
@@ -193,6 +233,10 @@
             .container {
                 padding: 15px;
             }
+            .login-box {
+                width: 90%;
+                margin: 0 5%;
+            }
         }
         .note {
             background: #fff8e1;
@@ -207,10 +251,38 @@
             color: #3498db;
             font-size: 18px;
         }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background: #95a5a6;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .logout-btn:hover {
+            background: #7f8c8d;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- 登录模块 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h3><i class="fas fa-lock"></i> 系统登录</h3>
+            <input type="password" id="password" class="login-input" placeholder="请输入密码">
+            <button class="login-btn" id="loginBtn">登录</button>
+            <div class="login-error" id="loginError">
+                <i class="fas fa-exclamation-circle"></i> 密码错误，请重新输入
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="mainContainer" style="display:none;">
+        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> 退出</button>
+        
         <h2><i class="fas fa-search"></i> 外籍演员信息查询系统</h2>
         
         <div class="search-panel">
@@ -287,9 +359,39 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
-            // 完整的演员数据
-            const actorData = [
-              {
+            // 登录功能
+            $('#loginBtn').click(login);
+            $('#password').keypress(function(e) {
+                if(e.which === 13) {
+                    login();
+                }
+            });
+            
+            function login() {
+                const password = $('#password').val();
+                if (password === 'dyga123456') {
+                    $('#loginContainer').hide();
+                    $('#mainContainer').show();
+                    initializeSystem();
+                } else {
+                    $('#loginError').show();
+                    setTimeout(() => {
+                        $('#loginError').hide();
+                    }, 3000);
+                }
+            }
+            
+            // 退出功能
+            $('#logoutBtn').click(function() {
+                $('#mainContainer').hide();
+                $('#loginContainer').show();
+                $('#password').val('');
+            });
+            
+            function initializeSystem() {
+                // 完整的演员数据
+                const actorData = [
+                {
                 "名": "KSENIIA",
                 "姓": "TIULIUKINA",
                 "联系方式": "19846615397",
@@ -989,100 +1091,102 @@
                 "联系人方式": "NaN",
                 "备注": "NaN"
               }
-            ];
+                  // 这里上面添加所有演员的信息
+                ];
 
-            // 初始化数据表格
-            initializeDataTable(actorData);
-            
-            // 搜索按钮点击事件
-            $('#search-btn').click(function() {
-                performSearch();
-            });
-            
-            // 重置按钮点击事件
-            $('#reset-btn').click(function() {
-                $('#search-name, #search-contact, #search-passport, #search-movie, #search-location, #search-date').val('');
-                table.columns().search('').draw();
-            });
-            
-            // 按回车键触发搜索
-            $('.search-group input').keypress(function(e) {
-                if(e.which === 13) {
+                // 初始化数据表格
+                initializeDataTable(actorData);
+                
+                // 搜索按钮点击事件
+                $('#search-btn').click(function() {
                     performSearch();
-                }
-            });
-        });
-        
-        function initializeDataTable(data) {
-            // 隐藏加载提示，显示表格
-            $('#loading').hide();
-            $('#actors').show();
-            
-            window.table = $('#actors').DataTable({
-                data: data,
-                columns: [
-                    { data: '名' },
-                    { data: '姓' },
-                    { data: '联系方式' },
-                    { data: '横影卡号码' },
-                    { data: '护照号码' },
-                    { data: '在华地' },
-                    { data: '剧组名称' },
-                    { data: '拍摄地点' },
-                    { data: '拍摄开始日期' },
-                    { data: '拍摄结束日期' },
-                    { data: '联系人方式' },
-                    { data: '备注' }
-                ],
-                language: {
-                    search: "快速搜索:",
-                    lengthMenu: "每页显示 _MENU_ 条",
-                    info: "第 _START_ 到 _END_ 条，共 _TOTAL_ 条",
-                    infoEmpty: "没有数据",
-                    infoFiltered: "(从 _MAX_ 条记录中过滤)",
-                    paginate: {
-                        first: "首页",
-                        last: "末页",
-                        next: "下一页",
-                        previous: "上一页"
-                    },
-                    zeroRecords: "没有找到匹配的记录"
-                },
-                pageLength: 10,
-                lengthMenu: [10, 25, 50, 100],
-                dom: '<"top"lf>rt<"bottom"ip><"clear">',
-                responsive: true,
-                order: [[0, 'asc']]
-            });
-        }
-        
-        function performSearch() {
-            // 获取搜索条件
-            const name = $('#search-name').val().trim();
-            const contact = $('#search-contact').val().trim();
-            const passport = $('#search-passport').val().trim();
-            const movie = $('#search-movie').val().trim();
-            const location = $('#search-location').val().trim();
-            const date = $('#search-date').val();
-            
-            // 构建搜索条件
-            table.columns(0).search(name, true, false); // 名
-            table.columns(1).search(name, true, false); // 姓
-            table.columns(2).search(contact);
-            table.columns(4).search(passport);
-            table.columns(6).search(movie);
-            table.columns(7).search(location);
-            
-            // 日期搜索
-            if (date) {
-                table.columns(8).search(date);
-            } else {
-                table.columns(8).search('');
+                });
+                
+                // 重置按钮点击事件
+                $('#reset-btn').click(function() {
+                    $('#search-name, #search-contact, #search-passport, #search-movie, #search-location, #search-date').val('');
+                    table.columns().search('').draw();
+                });
+                
+                // 按回车键触发搜索
+                $('.search-group input').keypress(function(e) {
+                    if(e.which === 13) {
+                        performSearch();
+                    }
+                });
             }
             
-            // 执行搜索
-            table.draw();
-        }
+            function initializeDataTable(data) {
+                // 隐藏加载提示，显示表格
+                $('#loading').hide();
+                $('#actors').show();
+                
+                window.table = $('#actors').DataTable({
+                    data: data,
+                    columns: [
+                        { data: '名' },
+                        { data: '姓' },
+                        { data: '联系方式' },
+                        { data: '横影卡号码' },
+                        { data: '护照号码' },
+                        { data: '在华地' },
+                        { data: '剧组名称' },
+                        { data: '拍摄地点' },
+                        { data: '拍摄开始日期' },
+                        { data: '拍摄结束极客日期' },
+                        { data: '联系人方式' },
+                        { data: '备注' }
+                    ],
+                    language: {
+                        search: "快速搜索:",
+                        lengthMenu: "每页显示 _MENU_ 条",
+                        info: "第 _START_ 到 _END_ 条，共 _TOTAL_ 条",
+                        infoEmpty: "没有数据",
+                        infoFiltered: "(从 _MAX_ 条记录中过滤)",
+                        paginate: {
+                            first: "首页",
+                            last: "末页",
+                            next: "下一页",
+                            previous: "上一页"
+                        },
+                        zeroRecords: "没有找到匹配的记录"
+                    },
+                    pageLength: 10,
+                    lengthMenu: [10, 25, 50, 100],
+                    dom: '<"top"lf>rt极客<"bottom"ip><"clear">',
+                    responsive: true,
+                    order: [[0, 'asc']]
+                });
+            }
+            
+            function performSearch() {
+                // 获取搜索条件
+                const name = $('#search-name').val().trim();
+                const contact = $('#search-contact').val().trim();
+                const passport = $('#search-passport').val().trim();
+                const movie = $('#search-movie').val().trim();
+                const location = $('#search-location').val().trim();
+                const date = $('#search-date').val();
+                
+                // 构建搜索条件
+                table.columns(0).search(name, true, false); // 名
+                table.columns(1).search(name, true, false); // 姓
+                table.columns(2).search(contact);
+                table.columns(4).search(passport);
+                table.columns(6).search(movie);
+                table.columns(7).search(location);
+                
+                // 日期搜索
+                if (date) {
+                    table.columns(8).search(date);
+                } else {
+                    table.columns(8).search('');
+                }
+                
+                // 执行搜索
+                table.draw();
+            }
+        });
     </script>
 </body>
 </html>
