@@ -279,7 +279,7 @@
     <!-- 登录模块 -->
     <div class="login-container" id="loginContainer">
         <div class="login-box">
-            <h3><i class="fas fa-lock"></i> 系统登录</h3>
+            <h3><i class="fas fa-lock"></i> 外籍演员信息查询系统</h3>
             <input type="password" id="password" class="login-input" placeholder="请输入密码">
             <button class="login-btn" id="loginBtn">登录</button>
             <div class="login-error" id="loginError">
@@ -372,6 +372,9 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function() {
+            // 禁用DataTables的所有错误提示
+            $.fn.dataTable.ext.errMode = 'none';
+           
             // 登录功能
             $('#loginBtn').click(login);
             $('#password').keypress(function(e) {
@@ -792,7 +795,7 @@
                 "剧组名称": "《魅影神捕》",
                 "极客拍摄地点": "绕溪天都城",
                 "拍摄开始日期": "2025-08-12",
-                "拍摄结束极客日期": "极客2025-08-12",
+                "拍摄结束日期": "2025-08-12",
                 "联系人方式": "吕孝鸿13858952121",
                 "备注": "当日往返"
               },
@@ -1146,7 +1149,7 @@
                         { data: '剧组名称' },
                         { data: '拍摄地点' },
                         { data: '拍摄开始日期' },
-                        { data: '拍摄结束极客日期' },
+                        { data: '拍摄结束日期' },
                         { data: '联系人方式' },
                         { data: '备注' }
                     ],
