@@ -1,165 +1,307 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>外籍演员信息查询系统</title>
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body { font-family:"微软雅黑",sans-serif;margin:0;padding:20px;background:linear-gradient(135deg,#f5f7fa 0%,#e4efe9 100%); }
-    .login-container { position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:flex;justify-content:center;align-items:center;z-index:1000; }
-    .login-box { background:#fff;padding:30px;border-radius:10px;box-shadow:0 5px 20px rgba(0,0,0,.2);width:350px;text-align:center;position:relative; }
-    .login-box h3{margin-bottom:20px;color:#2c3e50;}
-    .login-input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:5px;}
-    .login-btn{width:100%;padding:12px;background:#3498db;color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:bold;}
-    .login-error{color:#e74c3c;margin-top:10px;display:none;}
-    .login-footer{margin-top:20px;font-size:14px;color:#95a5a6;}
-    .container{max-width:1400px;margin:0 auto;background:#fff;padding:30px;border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,.1);}
-    h2{margin-bottom:20px;text-align:center;}
-    .search-panel{background:#f8f9fa;padding:20px;border-radius:12px;margin-bottom:30px;}
-    .search-row{display:flex;flex-wrap:wrap;gap:20px;margin-bottom:20px;}
-    .search-group{flex:1;min-width:200px;}
-    .search-group label{display:block;margin-bottom:6px;font-weight:bold;}
-    .buttons{display:flex;gap:15px;justify-content:center;}
-    table{width:100%;border-collapse:collapse;margin-top:20px;}
-    th{background:#2c3e50;color:#fff;padding:10px;}
-    td{padding:10px;border-bottom:1px solid #eee;}
-    tr:nth-child(even){background:#f9f9f9;}
-    .logout-btn{position:absolute;top:20px;right:20px;padding:6px 12px;background:#95a5a6;color:#fff;border:none;border-radius:5px;}
-    .loading{text-align:center;padding:20px;color:#3498db;}
-    /* 查看源代码弹框 */
-    .view-source-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);display:none;justify-content:center;align-items:center;z-index:2000;}
-    .view-source-box{background:#fff;padding:30px;border-radius:10px;position:relative;width:400px;text-align:center;}
-    .close-btn{position:absolute;top:15px;right:15px;background:none;border:none;font-size:24px;color:#95a5a6;cursor:pointer;}
-    .view-source-input{width:100%;padding:12px;margin:15px 0;border:1px solid #ddd;border-radius:5px;}
-    .view-source-btn{width:100%;padding:12px;background:#3498db;color:#fff;border:none;border-radius:5px;}
-    .view-source-error{color:#e74c3c;margin-top:10px;display:none;}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>外籍演员信息查询系统</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: "微软雅黑", sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+            position: relative;
+        }
+        .login-box h3 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            background: #2980b9;
+        }
+        .login-error {
+            color: #e74c3c;
+            margin-top: 10px;
+            display: none;
+        }
+        .login-footer {
+            margin-top: 25px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            color: #95a5a6;
+            font-size: 14px;
+            text-align: center;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            position: relative;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #2c3e50;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+            font-size: 28px;
+        }
+        h2 i { margin-right: 10px; color: #3498db; }
+        .search-panel {
+            background: linear-gradient(to right, #f8f9fa, #e9f5e9);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e3e3e3;
+        }
+        .search-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .search-group { flex: 1; min-width: 200px; }
+        .search-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+            font-size: 16px;
+        }
+        .search-group input {
+            width: 100%; padding: 12px 15px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 16px; box-sizing: border-box;
+        }
+        .buttons { display: flex; gap: 15px; margin-top: 25px; justify-content: center; }
+        button {
+            padding: 12px 25px; border: none; border-radius: 8px;
+            cursor: pointer; font-weight: bold; font-size: 16px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-search { background: linear-gradient(to right, #3498db, #2980b9); color: white; }
+        .btn-reset { background: linear-gradient(to right, #e74c3c, #c0392b); color: white; }
+        table {
+            width: 100%; border-collapse: collapse; margin-top: 20px;
+            border-radius: 10px; overflow: hidden;
+        }
+        th {
+            background: linear-gradient(to right, #2c3e50, #4a6580);
+            color: white; text-align: left; padding: 15px; font-weight: 600;
+        }
+        td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        tr:hover { background-color: #f1f7fd; }
+        .footer {
+            text-align: center; margin-top: 40px; color: #7f8c8d;
+            font-size: 14px; padding-top: 20px; border-top: 1px solid #eee;
+        }
+        .logout-btn {
+            position: absolute; top: 20px; right: 20px;
+            padding: 8px 15px; background: #95a5a6; color: white;
+            border: none; border-radius: 5px; cursor: pointer;
+        }
+        .loading { text-align: center; padding: 20px; color: #3498db; font-size: 18px; }
+        /* 源代码验证弹框 */
+        .view-source-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none;
+            justify-content: center; align-items: center; z-index: 2000;
+        }
+        .view-source-box {
+            background: white; padding: 30px; border-radius: 10px;
+            box-shadow: 0 5px 30px rgba(0, 0, 0, 0.3);
+            width: 400px; text-align: center; position: relative;
+        }
+        .close-btn {
+            position: absolute; top: 15px; right: 15px;
+            background: none; border: none; font-size: 24px;
+            color: #95a5a6; cursor: pointer;
+        }
+        .close-btn:hover { color: #e74c3c; }
+        .view-source-input { width: 100%; padding: 12px; margin: 15px 0; border: 1px solid #ddd; border-radius: 5px; }
+        .view-source-btn { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 5px; }
+        .view-source-error { color: #e74c3c; margin-top: 15px; display: none; }
+    </style>
 </head>
 <body>
-  <!-- 登录 -->
-  <div class="login-container" id="loginContainer">
-    <div class="login-box">
-      <h3><i class="fas fa-lock"></i> 外籍演员信息查询系统</h3>
-      <input type="password" id="password" class="login-input" placeholder="请输入密码">
-      <button class="login-btn" id="loginBtn">登录</button>
-      <div class="login-error" id="loginError">密码错误，请重试</div>
-      <div class="login-footer">东阳市公安局大数据实战中心 2025</div>
+    <!-- 登录模块 -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <h3><i class="fas fa-lock"></i> 外籍演员信息查询系统</h3>
+            <input type="password" id="password" class="login-input" placeholder="请输入密码">
+            <button class="login-btn" id="loginBtn">登录</button>
+            <div class="login-error" id="loginError">密码错误，请重试</div>
+            <div class="login-footer">东阳市公安局大数据实战中心 2025</div>
+        </div>
     </div>
-  </div>
 
-  <!-- 源代码验证 -->
-  <div class="view-source-modal" id="viewSourceModal">
-    <div class="view-source-box">
-      <button class="close-btn" id="closeSourceModal"><i class="fas fa-times"></i></button>
-      <h3><i class="fas fa-code"></i> 查看源代码权限验证</h3>
-      <input type="password" id="sourcePassword" class="view-source-input" placeholder="输入密码">
-      <button class="view-source-btn" id="viewSourceBtn">验证</button>
-      <div class="view-source-error" id="viewSourceError">密码错误</div>
+    <!-- 查看源代码验证 -->
+    <div class="view-source-modal" id="viewSourceModal">
+        <div class="view-source-box">
+            <button class="close-btn" id="closeSourceModal"><i class="fas fa-times"></i></button>
+            <h3><i class="fas fa-code"></i> 查看源代码权限验证</h3>
+            <input type="password" id="sourcePassword" class="view-source-input" placeholder="输入密码">
+            <button class="view-source-btn" id="viewSourceBtn">验证</button>
+            <div class="view-source-error" id="viewSourceError">密码错误</div>
+        </div>
     </div>
-  </div>
 
-  <!-- 主容器 -->
-  <div class="container" id="mainContainer" style="display:none;">
-    <button class="logout-btn" id="logoutBtn">退出</button>
-    <h2>外籍演员信息查询系统</h2>
-    <div class="search-panel">
-      <div class="search-row">
-        <div class="search-group"><label>国籍</label><input type="text" id="search-nationality"></div>
-        <div class="search-group"><label>联系方式</label><input type="text" id="search-contact"></div>
-        <div class="search-group"><label>护照号码</label><input type="text" id="search-passport"></div>
-      </div>
-      <div class="search-row">
-        <div class="search-group"><label>剧组名称</label><input type="text" id="search-movie"></div>
-        <div class="search-group"><label>拍摄地点</label><input type="text" id="search-location"></div>
-        <div class="search-group"><label>拍摄日期</label><input type="date" id="search-date"></div>
-      </div>
-      <div class="buttons">
-        <button class="btn-search" id="search-btn">搜索</button>
-        <button class="btn-reset" id="reset-btn">重置</button>
-      </div>
+    <!-- 主容器 -->
+    <div class="container" id="mainContainer" style="display:none;">
+        <button class="logout-btn" id="logoutBtn">退出</button>
+        <h2><i class="fas fa-search"></i> 外籍演员信息查询系统</h2>
+        <div class="search-panel">
+            <div class="search-row">
+                <div class="search-group"><label>国籍</label><input type="text" id="search-nationality"></div>
+                <div class="search-group"><label>联系方式</label><input type="text" id="search-contact"></div>
+                <div class="search-group"><label>护照号码</label><input type="text" id="search-passport"></div>
+            </div>
+            <div class="search-row">
+                <div class="search-group"><label>剧组名称</label><input type="text" id="search-movie"></div>
+                <div class="search-group"><label>拍摄地点</label><input type="text" id="search-location"></div>
+                <div class="search-group"><label>拍摄日期</label><input type="date" id="search-date"></div>
+            </div>
+            <div class="buttons">
+                <button class="btn-search" id="search-btn"><i class="fas fa-search"></i> 搜索</button>
+                <button class="btn-reset" id="reset-btn"><i class="fas fa-redo"></i> 重置</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> 正在加载数据...</div>
+
+        <table id="actors" class="display" style="display:none;">
+            <thead>
+                <tr>
+                    <th>国籍</th><th>名</th><th>姓</th><th>性别</th>
+                    <th>联系方式</th><th>横影卡号码</th><th>护照号码</th><th>在华地</th>
+                    <th>剧组名称</th><th>拍摄地点</th><th>拍摄开始日期</th><th>拍摄结束日期</th><th>联系人方式</th><th>备注</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div class="footer">© 2025 外籍演员信息查询系统 | 东阳市公安局大数据实战中心</div>
     </div>
-    <div id="loading" class="loading"><i class="fas fa-spinner fa-spin"></i> 正在加载数据...</div>
-    <table id="actors" class="display" style="display:none;">
-      <thead>
-        <tr>
-          <th>国籍</th><th>名</th><th>姓</th><th>性别</th>
-          <th>联系方式</th><th>横影卡号码</th><th>护照号码</th><th>在华地</th>
-          <th>剧组名称</th><th>拍摄地点</th><th>拍摄开始日期</th><th>拍摄结束日期</th><th>联系人方式</th><th>备注</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
 
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script>
-    $(function(){
-      // 禁止右键和 Ctrl+U
-      $(document).on("contextmenu", e=>{e.preventDefault();$("#viewSourceModal").css("display","flex");});
-      $(document).on("keydown", e=>{
-        if(e.ctrlKey && e.keyCode===85){e.preventDefault();$("#viewSourceModal").css("display","flex");}
-      });
-      // 源代码验证
-      $("#viewSourceBtn").click(function(){
-        if($("#sourcePassword").val()==="Yjk159410DYGA"){
-          $("#viewSourceModal").hide();$("#sourcePassword").val("");
-        }else{$("#viewSourceError").show();setTimeout(()=>$("#viewSourceError").hide(),3000);}
-      });
-      $("#closeSourceModal").click(()=>{$("#viewSourceModal").hide();$("#sourcePassword").val("");$("#viewSourceError").hide();});
-      $("#viewSourceModal").click(e=>{if(e.target===e.currentTarget){$("#closeSourceModal").click();}});
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(function(){
+            // 禁止右键 & Ctrl+U
+            $(document).on("contextmenu", e=>{e.preventDefault();$("#viewSourceModal").css("display","flex");});
+            $(document).on("keydown", e=>{
+                if(e.ctrlKey && e.keyCode===85){e.preventDefault();$("#viewSourceModal").css("display","flex");}
+            });
+            // 源代码弹框
+            $("#viewSourceBtn").click(function(){
+                if($("#sourcePassword").val()==="Yjk159410DYGA"){
+                    $("#viewSourceModal").hide();$("#sourcePassword").val("");
+                }else{$("#viewSourceError").show();setTimeout(()=>$("#viewSourceError").hide(),3000);}
+            });
+            $("#closeSourceModal").click(()=>{$("#viewSourceModal").hide();$("#sourcePassword").val("");$("#viewSourceError").hide();});
+            $("#viewSourceModal").click(e=>{if(e.target===e.currentTarget) $("#closeSourceModal").click();});
 
-      // 登录
-      $("#loginBtn").click(login);
-      $("#password").keypress(e=>{if(e.which===13)login();});
-      function login(){
-        if($("#password").val()==="dyga123456"){
-          $("#loginContainer").hide();$("#mainContainer").show();loadActors();
-        }else{$("#loginError").show();setTimeout(()=>$("#loginError").hide(),3000);}
-      }
-      $("#logoutBtn").click(()=>{$("#mainContainer").hide();$("#loginContainer").show();$("#password").val("");});
+            // 登录
+            $("#loginBtn").click(login);
+            $("#password").keypress(e=>{if(e.which===13) login();});
+            function login(){
+                if($("#password").val()==="dyga123456"){
+                    $("#loginContainer").hide();$("#mainContainer").show();loadActors();
+                }else{$("#loginError").show();setTimeout(()=>$("#loginError").hide(),3000);}
+            }
+            $("#logoutBtn").click(()=>{$("#mainContainer").hide();$("#loginContainer").show();$("#password").val("");});
 
-      // 加载数据
-      function loadActors(){
-        $.getJSON("actors.json",data=>{initializeDataTable(data);})
-         .fail(()=>alert("加载数据失败！"));
-      }
-      // 初始化表格
-      function initializeDataTable(data){
-        $("#loading").hide();$("#actors").show();
-        window.table=$("#actors").DataTable({
-          data:data,
-          columns:[
-            {data:"国籍"},{data:"名"},{data:"姓"},{data:"性别"},
-            {data:"联系方式"},{data:"横影卡号码"},{data:"护照号码"},{data:"在华地"},
-            {data:"剧组名称"},{data:"拍摄地点"},{data:"拍摄开始日期"},{data:"拍摄结束日期"},
-            {data:"联系人方式"},{data:"备注"}
-          ],
-          pageLength:10,language:{search:"快速搜索:"}
+            // 加载数据
+            function loadActors(){
+                $.getJSON("actors.json",data=>{initializeDataTable(data);})
+                 .fail(()=>alert("加载数据失败！"));
+            }
+            // 初始化表格
+            function initializeDataTable(data){
+                $("#loading").hide();$("#actors").show();
+                window.table=$("#actors").DataTable({
+                    data:data,
+                    columns:[
+                        {data:"国籍"},{data:"名"},{data:"姓"},{data:"性别"},
+                        {data:"联系方式"},{data:"横影卡号码"},{data:"护照号码"},{data:"在华地"},
+                        {data:"剧组名称"},{data:"拍摄地点"},{data:"拍摄开始日期"},{data:"拍摄结束日期"},
+                        {data:"联系人方式"},{data:"备注"}
+                    ],
+                    pageLength:10,
+                    language:{search:"快速搜索:"}
+                });
+            }
+            // 搜索
+            $("#search-btn").click(performSearch);
+            $("#reset-btn").click(()=>{$("#search-nationality,#search-contact,#search-passport,#search-movie,#search-location,#search-date").val("");table.columns().search("").draw();});
+            function performSearch(){
+                table.columns().search("");
+                let n=$("#search-nationality").val().trim(),
+                    c=$("#search-contact").val().trim(),
+                    p=$("#search-passport").val().trim(),
+                    m=$("#search-movie").val().trim(),
+                    l=$("#search-location").val().trim(),
+                    d=$("#search-date").val();
+                if(n) table.column(0).search(n);
+                if(c) table.column(4).search(c);
+                if(p) table.column(6).search(p);
+                if(m) table.column(8).search(m);
+                if(l) table.column(9).search(l);
+                if(d){
+                    let date=new Date(d);
+                    let f=`${date.getFullYear()}年${(date.getMonth()+1).toString().padStart(2,"0")}月${date.getDate().toString().padStart(2,"0")}日`;
+                    table.columns([10,11]).search(f,true,false,false);
+                }
+                table.draw();
+            }
         });
-      }
-      // 搜索
-      $("#search-btn").click(performSearch);
-      $("#reset-btn").click(()=>{$("#search-nationality,#search-contact,#search-passport,#search-movie,#search-location,#search-date").val("");table.columns().search("").draw();});
-      function performSearch(){
-        table.columns().search("");
-        let n=$("#search-nationality").val().trim(),
-            c=$("#search-contact").val().trim(),
-            p=$("#search-passport").val().trim(),
-            m=$("#search-movie").val().trim(),
-            l=$("#search-location").val().trim(),
-            d=$("#search-date").val();
-        if(n) table.column(0).search(n);
-        if(c) table.column(4).search(c);
-        if(p) table.column(6).search(p);
-        if(m) table.column(8).search(m);
-        if(l) table.column(9).search(l);
-        if(d){ let date=new Date(d); let f=`${date.getFullYear()}年${(date.getMonth()+1).toString().padStart(2,"0")}月${date.getDate().toString().padStart(2,"0")}日`; table.columns([10,11]).search(f,true,false,false);}
-        table.draw();
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
