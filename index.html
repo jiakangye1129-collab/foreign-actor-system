@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* 样式保持不变，与原始代码相同 */
         body {
             font-family: "微软雅黑", sans-serif;
             margin: 0;
@@ -407,7 +408,7 @@
             });
             
             function initializeSystem() {
-                // 完整的演员数据（只保留前3条作为示例）
+                // 完整的演员数据
                 const actorData = [
                 {
         "编号": 17,
@@ -1309,7 +1310,6 @@
         "联系人方式": "马浒15900622542",
         "备注": "当日往返"
     }
-                    // 此处省略了其他演员数据，实际使用时请补全
                 ];
 
                 // 初始化数据表格
@@ -1380,6 +1380,9 @@
             }
             
             function performSearch() {
+                // 清除所有列的搜索条件
+                table.columns().search('');
+                
                 // 获取搜索条件
                 const name = $('#search-name').val().trim();
                 const contact = $('#search-contact').val().trim();
@@ -1388,23 +1391,51 @@
                 const location = $('#search-location').val().trim();
                 const date = $('#search-date').val();
                 
-                // 构建搜索条件
-                table.columns(0).search(name, true, false); // 名
-                table.columns(1).search(name, true, false); // 姓
-                table.columns(2).search(contact);
-                table.columns(4).search(passport);
-                table.columns(6).search(movie);
-                table.columns(7).search(location);
+                // 姓名搜索（同时搜索名和姓）
+                if (name) {
+                    // 使用正则表达式实现"或"搜索
+                    table.columns([1, 2]).search(name, true, false, false);
+                }
                 
-                // 日期搜索
+                // 联系方式搜索
+                if (contact) {
+                    table.column(4).search(contact);
+                }
+                
+                // 护照号码搜索
+                if (passport) {
+                    table.column(6).search(passport);
+                }
+                
+                // 剧组名称搜索
+                if (movie) {
+                    table.column(8).search(movie);
+                }
+                
+                // 拍摄地点搜索
+                if (location) {
+                    table.column(9).search(location);
+                }
+                
+                // 日期搜索（需要特殊处理）
                 if (date) {
-                    table.columns(8).search(date);
-                } else {
-                    table.columns(8).search('');
+                    // 将日期格式转换为与数据中相似的格式
+                    const formattedDate = formatDateForSearch(date);
+                    // 同时搜索开始日期和结束日期列
+                    table.columns([10, 11]).search(formattedDate, true, false, false);
                 }
                 
                 // 执行搜索
                 table.draw();
+            }
+            
+            // 辅助函数：将日期格式转换为与数据中相似的格式
+            function formatDateForSearch(dateString) {
+                const date = new Date(dateString);
+                const year = date.getFullYear();
+                const month = (date.getMonth() + 1).toString().padStart(2, '0');
+                const day = date.getDate().toString().padStart(2, '0');
+                return `${year}年${month}月${day}日`;
             }
         });
     </script>
